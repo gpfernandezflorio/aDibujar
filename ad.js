@@ -1,6 +1,7 @@
 const data = {};
 const CASILLA = 10;
 const INTERVAL = 100;
+const TAMANIO_CABEZAL = 10;
 const templates = {
   casaSinProcedimientos: 'linea -125 130\nlinea -125 -130\nabajo 150\nrectangulo 250 150\nderecha 60\nrectangulo 130 100\nderecha 230\nrectangulo 40 100\narriba 105 izquierda 5\ncirculo 50\narriba 55 derecha 5\ncirculo 40\narriba 45 derecha 5\ncirculo 30',
   casaConProcedimientos: '[Dibujar Techo]\nabajo 150\n[Dibujar Frente]\nderecha 60\n[Dibujar Puerta]\nderecha 230\n[Dibujar Arbol]\n\n"Dibujar Techo"\n  linea -125 130\n  linea -125 -130\n\n"Dibujar Frente"\n  rectangulo 250 150\n\n"Dibujar Puerta"\n  rectangulo 130 100\n\n"Dibujar Arbol"\n  [Dibujar Tronco]\n  arriba 105 izquierda 5\n  circulo 50\n  arriba 55 derecha 5\n  circulo 40\n  arriba 45 derecha 5\n  circulo 30\n\n"Dibujar Tronco"\n  rectangulo 40 100',
@@ -26,6 +27,9 @@ window.addEventListener('load', function() {
   }
   selector.innerHTML = opciones;
   cargarTemplate();
+  let cursor = document.getElementById('cursor');
+  cursor.style.width = `${TAMANIO_CABEZAL}px`;
+  cursor.style.height = `${TAMANIO_CABEZAL}px`;
 });
 
 function cargarTemplate() {
@@ -68,16 +72,29 @@ function dibujar() {
   canvas.width = (Math.max(10, ancho) + 20);
   canvas.height = (Math.max(10, alto) + 20);
   data.ctx = canvas.getContext("2d");
-  seguirDibujando();
+  actualizarPosicionCabezal(0, 0);
+  document.getElementById('cursor').hidden = false;
+  if (data.exe) {
+    clearTimeout(data.exe);
+  }
+  data.exe = setTimeout(seguirDibujando, INTERVAL*2);
 }
 
 function seguirDibujando() {
+  delete data.exe;
   if (data.dibujo.length > 0) {
     let d = data.dibujo.shift();
     data.ctx.beginPath();
-    if (d.q == primitivas.LINE) {
-      data.ctx.moveTo((d.x - data.limites.x), (d.y - data.limites.y));
-      data.ctx.lineTo(d.w + (d.x - data.limites.x), d.h + (d.y - data.limites.y));
+    if (d.q == "MOVE") {
+      actualizarPosicionCabezal(d.x, d.y);
+    } else if (d.q == primitivas.LINE) {
+      let x = d.x - data.limites.x;
+      let y = d.y - data.limites.y;
+      data.ctx.moveTo(x, y);
+      x += d.w;
+      y += d.h;
+      data.ctx.lineTo(x, y);
+      actualizarPosicionCabezal(d.x + d.w, d.y + d.h);
     } else if (d.q == primitivas.RECT) {
       data.ctx.rect((d.x - data.limites.x), (d.y - data.limites.y), d.w, d.h);
     } else if (d.q == primitivas.CIRC) {
@@ -87,8 +104,17 @@ function seguirDibujando() {
       data.ctx.rect((d.x - data.limites.x), (d.y - data.limites.y), d.l, d.l);
     }
     data.ctx.stroke();
-    setTimeout(seguirDibujando, INTERVAL);
+    data.exe = setTimeout(seguirDibujando, INTERVAL);
   }
+}
+
+function actualizarPosicionCabezal(x, y) {
+  let cursor = document.getElementById('cursor');
+  let canvas = document.getElementById("canvas");
+  let r = canvas.getBoundingClientRect();
+  let t = TAMANIO_CABEZAL/2;
+  cursor.style.left = `${r.x + x - data.limites.x - t}px`;
+  cursor.style.top = `${r.y + y - data.limites.y - t}px`;
 }
 
 function nuevaDefinicion(fuente, i, definiciones) {
@@ -290,6 +316,7 @@ function procesarPrimitiva(linea, i, j) {
     }
     data.cabezal.x += pasos;
     data.limites.w = Math.max(data.limites.w, data.cabezal.x);
+    data.dibujo.push({q:"MOVE", x:data.cabezal.x, y:data.cabezal.y});
     return j + f -1;
   }
   if (primitiva.startsWith(primitivas.IZQ)) {
@@ -306,6 +333,7 @@ function procesarPrimitiva(linea, i, j) {
     }
     data.cabezal.x -= pasos;
     data.limites.x = Math.min(data.limites.x, data.cabezal.x);
+    data.dibujo.push({q:"MOVE", x:data.cabezal.x, y:data.cabezal.y});
     return j + f -1;
   }
   if (primitiva.startsWith(primitivas.ARR)) {
@@ -318,10 +346,11 @@ function procesarPrimitiva(linea, i, j) {
     let f = args.f;
     args = args.args;
     if (args.length > 0) {
-      pasos = -args[0];
+      pasos = args[0];
     }
-    data.cabezal.y += pasos;
+    data.cabezal.y -= pasos;
     data.limites.y = Math.min(data.limites.y, data.cabezal.y);
+    data.dibujo.push({q:"MOVE", x:data.cabezal.x, y:data.cabezal.y});
     return j + f -1;
   }
   if (primitiva.startsWith(primitivas.ABA)) {
@@ -334,10 +363,11 @@ function procesarPrimitiva(linea, i, j) {
     let f = args.f;
     args = args.args;
     if (args.length > 0) {
-      pasos = -args[0];
+      pasos = args[0];
     }
-    data.cabezal.y -= pasos;
+    data.cabezal.y += pasos;
     data.limites.h = Math.max(data.limites.h, data.cabezal.y);
+    data.dibujo.push({q:"MOVE", x:data.cabezal.x, y:data.cabezal.y});
     return j + f -1;
   }
   i++;

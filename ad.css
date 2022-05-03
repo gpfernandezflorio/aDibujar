@@ -6,3 +6,8 @@
 canvas {
   border: solid 2px;
 }
+
+.cursor {
+  position: absolute;
+  background-color: #f00;
+}
