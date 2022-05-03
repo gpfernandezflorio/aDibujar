@@ -1,10 +1,13 @@
 const data = {};
 const CASILLA = 10;
-const INTERVAL = 100;
+let INTERVAL = 100;
 const TAMANIO_CABEZAL = 10;
 const templates = {
   casaSinProcedimientos: 'linea -125 130\nlinea -125 -130\nabajo 150\nrectangulo 250 150\nderecha 60\nrectangulo 130 100\nderecha 230\nrectangulo 40 100\narriba 105 izquierda 5\ncirculo 50\narriba 55 derecha 5\ncirculo 40\narriba 45 derecha 5\ncirculo 30',
   casaConProcedimientos: '[Dibujar Techo]\nabajo 150\n[Dibujar Frente]\nderecha 60\n[Dibujar Puerta]\nderecha 230\n[Dibujar Arbol]\n\n"Dibujar Techo"\n  linea -125 130\n  linea -125 -130\n\n"Dibujar Frente"\n  rectangulo 250 150\n\n"Dibujar Puerta"\n  rectangulo 130 100\n\n"Dibujar Arbol"\n  [Dibujar Tronco]\n  arriba 105 izquierda 5\n  circulo 50\n  arriba 55 derecha 5\n  circulo 40\n  arriba 45 derecha 5\n  circulo 30\n\n"Dibujar Tronco"\n  rectangulo 40 100',
+  velero: '[Dibujar Casco]\narriba 60 izquierda 70\n[Dibujar Vela 1]\nderecha 10\n[Dibujar Vela 2]\narriba 190\n[Dibujar Bandera]\n\n"Dibujar Casco"\n  rectangulo 150 50\n  linea -50 50\n  linea 50 0\n  derecha 150\n  linea 50 0\n  linea -50 -50\n\n"Dibujar Vela 1"\n  linea 0 205\n  linea -150 -205\n  linea 150 0\n\n"Dibujar Vela 2"\n  linea 0 180\n  linea 130 -180\n  linea -130 0\n\n"Dibujar Bandera"\n  linea 0 30\n  linea 50 -15\n  linea -50 -15',
+  cohete: '[Dibujar Base]\narriba 10 derecha 50\nlinea 150 150\n[Dibujar Punta]\narriba 25 izquierda 25\nlinea -150 -150\n\n"Dibujar Base"\n  [Dibujar Aleta Central]\n  arriba 30 derecha 30\n  [Dibujar Parte Izquierda de Base]\n  derecha 10 abajo 10\n  [Dibujar Parte Derecha de Base]\n\n"Dibujar Parte Izquierda de Base"\n  linea -30 30\n  linea 30 30\n  [Dibujar Aleta Izquierda]\n  arriba 30 derecha 30\n  linea 30 -30\n\n"Dibujar Parte Derecha de Base"\n  linea 30 -30\n  linea -30 -30\n  [Dibujar Aleta Derecha]\n  abajo 30 izquierda 30\n  linea -30 30\n\n"Dibujar Aleta Central"\n  linea 60 60\n  linea 10 -10\n  linea -60 -60\n  linea -10 10\n\n"Dibujar Aleta Izquierda"\n  linea -10 0\n  linea -30 -30\n  linea 10 0\n\n"Dibujar Aleta Derecha"\n  linea 0 -10\n  linea 30 30\n  linea 0 10\n\n"Dibujar Punta"\n  derecha 10 abajo 10\n  linea 20 90\n  linea -90 -20\n  linea 70 -70\n  arriba 35 izquierda 35\n  circulo 40',
+  elefante: '[Dibujar Patas]\narriba 30 izquierda 100\n[Dibujar Cuerpo]\narriba 30 izquierda 70\n[Dibujar Cabeza]\n\n"Dibujar Patas"\n  rectangulo 20 30\n  derecha 20\n  rectangulo 20 30\n  derecha 60\n  rectangulo 20 30\n  derecha 20\n  rectangulo 20 30\n\n"Dibujar Cuerpo"\n  rectangulo 120 100\n  \n"Dibujar Cabeza"\n  circulo 70\n  arriba 20 derecha 15\n  circulo 10\n  derecha 35\n  [Dibujar Oreja]\n  izquierda 50 abajo 40\n  [Dibujar Trompa]\n\n"Dibujar Oreja"\n  linea 10 20\n  linea -10 20\n  linea -10 -20\n  linea 10 -20\n\n"Dibujar Trompa"\n  circulo 25\n  derecha 10 abajo 20\n  circulo 20\n  izquierda 6 abajo 12\n  circulo 15\n  abajo 5 izquierda 8\n  circulo 10\n  arriba 8 izquierda 5\n  circulo 8\n  arriba 5 izquierda 3\n  circulo 5',
   mickey: 'circulo\nderecha 150\ncirculo\nizquierda 100\nabajo 125\ncirculo 150',
 };
 
@@ -34,7 +37,21 @@ window.addEventListener('load', function() {
 
 function cargarTemplate() {
   let selector = document.getElementById('templates');
-  document.getElementById('codigoFuente').value = templates[selector.value];
+  let input = document.getElementById('codigoFuente');
+  input.value = templates[selector.value];
+  input.addEventListener('keydown', function(e) {
+    if (e.key == 'Tab') {
+      e.preventDefault();
+      var start = this.selectionStart;
+      var end = this.selectionEnd;
+
+      // set textarea value to: text before caret + tab + text after caret
+      this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
+
+      // put caret at right position again
+      this.selectionStart = this.selectionEnd = start + 2;
+    }
+  });
 }
 
 function ejecutar() {
