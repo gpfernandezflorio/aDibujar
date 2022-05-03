@@ -29,17 +29,7 @@ window.addEventListener('load', function() {
     opciones += `<option value="${t}">${t}</option>`;
   }
   selector.innerHTML = opciones;
-  cargarTemplate();
-  let cursor = document.getElementById('cursor');
-  cursor.style.width = `${TAMANIO_CABEZAL}px`;
-  cursor.style.height = `${TAMANIO_CABEZAL}px`;
-});
-
-function cargarTemplate() {
-  let selector = document.getElementById('templates');
-  let input = document.getElementById('codigoFuente');
-  input.value = templates[selector.value];
-  input.addEventListener('keydown', function(e) {
+  document.getElementById('codigoFuente').addEventListener('keydown', function(e) {
     if (e.key == 'Tab') {
       e.preventDefault();
       var start = this.selectionStart;
@@ -52,6 +42,15 @@ function cargarTemplate() {
       this.selectionStart = this.selectionEnd = start + 2;
     }
   });
+  cargarTemplate();
+  let cursor = document.getElementById('cursor');
+  cursor.style.width = `${TAMANIO_CABEZAL}px`;
+  cursor.style.height = `${TAMANIO_CABEZAL}px`;
+});
+
+function cargarTemplate() {
+  let selector = document.getElementById('templates');
+  document.getElementById('codigoFuente').value = templates[selector.value];
 }
 
 function ejecutar() {
