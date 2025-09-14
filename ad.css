@@ -1,13 +1,72 @@
+body {
+  background-color: #f8f8f8;
+}
+
 #codigoFuente {
-  width: 30%;
-  height: 50%;
+  width: 100%;
+  height: 100%;
+}
+
+#toolbox {
+  width: inherit;
+  height: inherit;
+  padding: 5px;
+}
+
+.toolboxButton {
+  width: 100%;
 }
 
 canvas {
   border: solid 2px;
+  background-color: #fff;
+}
+
+table {
+  /* width: 100%; */
+  background-color: #f0f0f0;
+}
+
+/* tr,td {
+  width: inherit;
+} */
+
+table,tr,td {
+  height: 50%;
+  align-content: start;
+  border: solid 1px #aaa;
+}
+
+#tdCanvas {
+  align-content: end;
+  background-color: #eee;
 }
 
 .cursor {
-  position: absolute;
+  position: relative;
+  float: none;
   background-color: #f00;
+  border-radius: 100%;
+}
+
+#encabezado {
+  width: inherit;
+  border: solid 2px #aaa;
+  padding: 5px;
+  background-color: #eee;
+  font-size: 16pt;
+}
+
+#contenido {
+  width: inherit;
+  border: solid 2px #aaa;
+  padding: 5px;
+  background-color: #fff;
+}
+
+#enunciado {
+  width: inherit;
+  border: solid 2px #aaa;
+  padding: 5px;
+  background-color: #fff;
 }

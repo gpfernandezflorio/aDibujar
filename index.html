@@ -4,8 +4,39 @@
   <script src="ad.js"></script>
 </header>
 <body>
-  <select id="templates"></select> <button type="button" onclick="cargarTemplate();">Cargar</button> <br>
-  <textarea id="codigoFuente"></textarea> <canvas id="canvas"></canvas> <br>
+  <div id="encabezado">
+    Dibujando con figuras
+  </div>
+  <div id="modoLibre">
+    <select id="templates"></select> <button type="button" onclick="cargarTemplate();">Cargar</button> <br>
+  </div>
+  <div id="modoDesafío">
+    <div id="enunciado"></div>
+  </div>
+  <div id="contenido">
+  <table>
+    <tr>
+      <td>
+        <div id="toolbox">
+          <button class="toolboxButton" onclick="agregarAlCódigo('CIRC');">círculo</button><br/>
+          <button class="toolboxButton" onclick="agregarAlCódigo('CUAD');">cuadrado</button><br/>
+          <button class="toolboxButton" onclick="agregarAlCódigo('RECT');">rectángulo</button><br/>
+          <button class="toolboxButton" onclick="agregarAlCódigo('LINE');">línea</button><br/>
+          <button class="toolboxButton" onclick="agregarAlCódigo('ARR');">arriba</button><br/>
+          <button class="toolboxButton" onclick="agregarAlCódigo('ABA');">abajo</button><br/>
+          <button class="toolboxButton" onclick="agregarAlCódigo('IZQ');">izquierda</button><br/>
+          <button class="toolboxButton" onclick="agregarAlCódigo('DER');">derecha</button>
+        </div>
+      </td>
+      <td>
+        <textarea id="codigoFuente"></textarea>
+      </td>
+      <td id="tdCanvas">
+        <div class="cursor" id="cursor" hidden></div>
+        <canvas id="canvas"></canvas>
+      </td>
+    </tr>
+  </table>
+  </div>
   <button type="button" onclick="ejecutar();">Ejecutar</button>
-  <div class="cursor" id="cursor" hidden></div>
 </body>
